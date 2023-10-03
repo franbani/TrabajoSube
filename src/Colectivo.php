@@ -4,7 +4,7 @@ namespace TrabajoSube;
 
 class Colectivo{
 
-    private $saldoMin = 0;
+    private $saldoMin = -211.84;
     private $costePasaje = 120;
     
     public function pagarCon($tarjeta){

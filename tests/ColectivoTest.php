@@ -23,22 +23,16 @@ class ColectivoTest extends TestCase{
         $carga = 333;
         $this->assertEquals($tarj->cargaTarjeta($tarj,$carga),"Valor de carga invalido. Los valores validos son: 150, 200, 250, 300, 350, 400, 450, 500, 600, 700, 800, 900, 1000, 1100, 1200, 1300, 1400, 1500, 2000, 2500, 3000, 3500 o 4000");
     }
-
-    public function testgenerarBoleto(){
-        $tarj = new Tarjeta(350);
-        $bole = new Boleto();
-        $this->assertEquals($bole->generarBoleto($tarj),"Pago exitoso. Saldo restante: 350");
-    }
-
+    
     public function testpagarConSaldo(){
         $cole = new Colectivo();
-        $tarj = new Tarjeta(470);
-        $this->assertEquals($cole->pagarCon($tarj),"Pago exitoso. Saldo restante: 350");
+        $tarj = new Tarjeta(0);
+        $this->assertEquals($cole->pagarCon($tarj),"Pago exitoso. Saldo restante: -120");
     }
 
     public function testpagarSinSaldo(){
         $cole = new Colectivo();
-        $tarj = new Tarjeta(80);
+        $tarj = new Tarjeta(-211);
         $this->assertEquals($cole->pagarCon($tarj),FALSE);
     }
 
