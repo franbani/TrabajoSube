@@ -4,6 +4,8 @@ namespace TrabajoSube;
 
 class Tarjeta{
 
+    public $tipo = "comun";
+
     public function __construct($saldo){ // $saldo es inherente a cada tarjeta
         $this->saldo = $saldo;
     }
