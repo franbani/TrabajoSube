@@ -4,13 +4,13 @@ namespace TrabajoSube;
 
 class Tarjeta{
 
-    public function __construct($saldo){
+    public function __construct($saldo){ // $saldo es inherente a cada tarjeta
         $this->saldo = $saldo;
     }
 
     private $saldoMax = 6600;
 
-    public function cargaTarjeta($tarjeta, $carga){
+    public function cargaTarjeta($tarjeta, $carga){ // Toma un objeto de clase Tarjeta y un entero, y si la carga no excede el saldoMax y el valor de carga es valido, se acredita la carga y se retorna el nuevo saldo
 
         if(($tarjeta->saldo + $carga) > $this->saldoMax){
             $texto = "Te pasaste del saldo maximo (6600)";
