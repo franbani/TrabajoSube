@@ -7,7 +7,7 @@ class FranquiciaCompleta extends Tarjeta{
     public $fyhUltPago = 0;
     public $viajesHoy = 0;
 
-    public function actualizarUsos($tarjeta){
+    public function actualizarUsosDiarios($tarjeta){
         if (date("d/m/Y",time()) != date("d/m/Y",$tarjeta->fyhUltPago)){
             $tarjeta->viajesHoy = 0;
         }
