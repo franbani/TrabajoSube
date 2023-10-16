@@ -12,7 +12,7 @@ class ColectivoTest extends TestCase{
         $carga = 500;
         $saldofinal = $saldoinicial + $carga;
         $tarj = new Tarjeta($saldoinicial);
-        $this->assertEquals($tarj->cargaTarjeta($tarj,$carga),$saldofinal);
+        $this->assertEquals($tarj->cargaTarjeta($tarj,$carga),'Se han cargado $' . $carga . '. Saldo final: $' . $saldofinal);
     }
 
     // Hacer una carga a una tarjeta con saldo negativo para comprobar que se descuente lo que se debe
@@ -22,14 +22,24 @@ class ColectivoTest extends TestCase{
         $carga = 200;
         $tarj = new Tarjeta($saldoinicial);
         $saldofinal = $saldoinicial + $carga;
-        $this->assertEquals($tarj->cargaTarjeta($tarj,$carga),$saldofinal);
+        $this->assertEquals($tarj->cargaTarjeta($tarj,$carga),'Se han cargado $' . $carga . '. Saldo final: $' . $saldofinal);
     }
 
-    // Comprobar que no se pueda exceder el saldo maximo de 6600 pesos
+    // Comprobar cuando se exceda el saldo maximo en una carga, se cargue hasta este saldo maximo, y comprobar que se acredite la carga pendiente al pagar un pasaje
     public function testcargaTarjetaMax(){
-        $tarj = new Tarjeta(6000);
-        $carga = 800;
-        $this->assertEquals($tarj->cargaTarjeta($tarj,$carga),"Te pasaste del saldo maximo (6600)");
+        $tarj = new Tarjeta(6400);
+        $cole = new Colectivo();
+        $carga = 400;
+        $this->assertEquals($tarj->cargaTarjeta($tarj,$carga),"Te pasaste del saldo maximo ($6600). Se cargará la tarjeta hasta este saldo y el excedente se acreditará a medida que se use la tarjeta.");
+        $this->assertEquals($tarj->saldo, $tarj->saldoMax);
+        $this->assertEquals($tarj->saldoPendiente, 200);
+
+        $cole->timerNuevoPago = 0; // para poder pagar varios pasajes uno atras del otro
+        $this->assertEquals($cole->pagarCon($tarj),"Pago exitoso. Saldo restante: $" . 6600);
+        $this->assertEquals($tarj->saldoPendiente, 80);
+        $this->assertEquals($cole->pagarCon($tarj),"Pago exitoso. Saldo restante: $" . 6560);
+        $this->assertEquals($tarj->saldoPendiente, 0);
+        $this->assertEquals($cole->pagarCon($tarj),"Pago exitoso. Saldo restante: $" . 6440);
     }
 
     // Comprobar que no se haga la carga si se ingresa un valor de carga no listado en la consigna
