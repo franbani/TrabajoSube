@@ -3,10 +3,15 @@
 namespace TrabajoSube;
 
 class Colectivo{
-
     private $saldoMin = -211.84;
     public $costePasaje = 120;
-    
+
+
+    public function __construct($linea = "102N"){
+        $this->linea = $linea;
+    }
+
+
     // pagarCon toma un objeto de clase Tarjeta, descuenta el precio del pasaje al saldo, crea un objeto de clase Boleto y retorna el resultado de generarBoleto o de saldoIns
     public function pagarCon($tarjeta){
         $boleto = new Boleto();
