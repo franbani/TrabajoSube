@@ -5,7 +5,7 @@ namespace TrabajoSube;
 class Boleto{
 
     public function fecha(){
-        return date("d/m/Y",time());
+        return date("d/m/Y H:i:s",time());
     }
 
     public function conocerTipo($tarj){

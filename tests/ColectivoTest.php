@@ -86,6 +86,9 @@ class ColectivoTest extends TestCase{
         $this->assertEquals($bole->conocerTipo($tarj),"parcial");
         $this->assertEquals($bole->conocerID($tarj),466752);
 
+        
+        $cole->verif = true; // Para que se pueda testear el beneficio sin estar en fecha u horario habil
+        
         // Test de los 4 medios boletos diarios
         $cole->timerNuevoPago = 0; // Seteamos en 0 para que se puedan pagar boletos aunque no hayan pasado los 5 minutos, solo para el test
         $saldofinal = $saldoinicial - ($cole->costePasaje / 2);
@@ -112,12 +115,16 @@ class ColectivoTest extends TestCase{
         $this->assertEquals($bole->conocerTipo($tarj),"completa");
         $this->assertEquals($bole->conocerID($tarj),756442);
 
+        
+        $cole->verif = true; // Para que se pueda testear el beneficio sin estar en un fecha u horario habil
+        
         // Test de los 2 BEG diarios
         $cole->timerNuevoPago = 0; // Seteamos en 0 para que se puedan pagar boletos aunque no hayan pasado los 5 minutos, solo para el test
         $this->assertEquals($cole->pagarCon($tarj),"Descuento completo aplicado");
         $this->assertEquals($cole->pagarCon($tarj),"Descuento completo aplicado");
         $this->assertEquals($tarj->viajesHoy,2);
         $this->assertEquals($cole->pagarCon($tarj),"Pago exitoso. Saldo restante: $" . $saldoinicial - 120);
+        
     }
 
 
@@ -130,7 +137,7 @@ class ColectivoTest extends TestCase{
         $this->assertEquals($bole->conocerLinea($cole),"Expreso");
     }
 
-    // Comprueba que dependiendo de cuantos viajes se hayan hecho, se aplicaran los distintos descuentos
+    // Comprobar que dependiendo de cuantos viajes se hayan hecho, se aplicaran los distintos descuentos
     public function testcomprobarDescuento(){
         $saldoinicial = 1000;
         $tarj = new Tarjeta($saldoinicial);
@@ -150,6 +157,19 @@ class ColectivoTest extends TestCase{
         $saldofinal -= ($cole->costePasaje * 0.75);
         $this->assertEquals($cole->pagarCon($tarj), "Pago exitoso. Saldo restante: $" . $saldofinal);
         
+    }
+
+    // Comprobar que si no se esta en fecha y hora habil no se efectuará el beneficio de franquicia, y se cobrará normalmente el pasaje
+    public function testFranquiciaNoHabil(){
+        $saldoinicial = 1000;
+        $tarjbeg = new FranquiciaCompleta($saldoinicial);
+        $tarjparcial = new FranquiciaParcial($saldoinicial);
+        $cole = new Colectivo();
+
+        $cole->verif = false; // Para testearlo sin necesidad de estar en fyh inhabil
+
+        $this->assertEquals($cole->pagarCon($tarjbeg),"Pago exitoso. Saldo restante: $" . $saldoinicial - $cole->costePasaje);
+        $this->assertEquals($cole->pagarCon($tarjparcial),"Pago exitoso. Saldo restante: $" . $saldoinicial - $cole->costePasaje);
     }
 
 
