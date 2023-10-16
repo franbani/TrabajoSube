@@ -45,7 +45,7 @@ class ColectivoTest extends TestCase{
         $saldoinicial = 500;
         $tarj = new Tarjeta($saldoinicial);
         $saldofinal = $saldoinicial - $cole->costePasaje;
-        $this->assertEquals($cole->pagarCon($tarj),"Pago exitoso. Saldo restante: " . $saldofinal);
+        $this->assertEquals($cole->pagarCon($tarj),"Pago exitoso. Saldo restante: $" . $saldofinal);
     }
 
     // Comprobar que se pueda usar el pasaje plus
@@ -54,7 +54,7 @@ class ColectivoTest extends TestCase{
         $saldoinicial = 0;
         $tarj = new Tarjeta($saldoinicial);
         $saldofinal = $saldoinicial - $cole->costePasaje;
-        $this->assertEquals($cole->pagarCon($tarj),"Pago exitoso. Saldo restante: " . $saldofinal);
+        $this->assertEquals($cole->pagarCon($tarj),"Pago exitoso. La tarjeta adeuda $" . -$saldofinal);
     }
 
     // Comprobar que se devuelva FALSE al intentar pagar con una tarjeta que ya gasto el plus
@@ -64,23 +64,41 @@ class ColectivoTest extends TestCase{
         $this->assertEquals($cole->pagarCon($tarj),FALSE);
     }
 
-    // Comprobar una tarjeta de FranquiciaCompleta siempre puede pagar un boleto
-    public function testFranquiciaCompleta(){
-        $cole = new Colectivo();
-        $saldoinicial = 500;
-        $tarjbeg = new FranquiciaCompleta(500);
-        $this->assertEquals($cole->pagarCon($tarjbeg),"Pago exitoso. Saldo restante: " . $saldoinicial);
-        $this->assertEquals($cole->pagarCon($tarjbeg),"Pago exitoso. Saldo restante: " . $saldoinicial);
-        $this->assertEquals($cole->pagarCon($tarjbeg),"Pago exitoso. Saldo restante: " . $saldoinicial);
-    }
-
-    // Comprobar que el monto del boleto pagado con medio boleto es siempre la mitad del normal
+    // Comprobar que se genere correctamente el boleto en franquicia parcial
     public function testFranquiciaParcial(){
         $cole = new Colectivo();
+        $bole = new Boleto();
         $saldoinicial = 500;
-        $tarj = new FranquiciaParcial($saldoinicial);
+        $tarj = new FranquiciaParcial($saldoinicial,466752);
         $saldofinal = $saldoinicial - ($cole->costePasaje / 2);
-        $this->assertEquals($cole->pagarCon($tarj),"Pago exitoso. Saldo restante: " . $saldofinal);
+        $this->assertEquals($cole->pagarCon($tarj),"Pago exitoso. Saldo restante: $" . $saldofinal);
+        $this->assertEquals($bole->conocerAbonado($cole,$tarj),60);
+        $this->assertEquals($bole->conocerTipo($tarj),"parcial");
+        $this->assertEquals($bole->conocerID($tarj),466752);
     }
+
+    // Comprobar una tarjeta de franquicia completa puede pagar siempre un boleto y probar generacion de boleto
+    public function testFranquiciaCompleta(){
+        $cole = new Colectivo();
+        $bole = new Boleto();
+        $saldoinicial = 500;
+        $tarj = new FranquiciaCompleta($saldoinicial,756442);
+        $this->assertEquals($cole->pagarCon($tarj),"Descuento completo aplicado");
+        $this->assertEquals($tarj->saldo,500);
+        $this->assertEquals($bole->conocerAbonado($cole,$tarj),0);
+        $this->assertEquals($bole->conocerTipo($tarj),"completa");
+        $this->assertEquals($bole->conocerID($tarj),756442);
+    }
+
+
+    // Comprobar que los objetos de clase Interurbano se generen con linea Expreso y coste de pasaje $270 por defecto
+    public function testInterurbano(){
+        $cole = new Interurbano();
+        $tarj = new Tarjeta();
+        $bole = new Boleto();
+        $this->assertEquals($bole->conocerAbonado($cole,$tarj),270);
+        $this->assertEquals($bole->conocerLinea($cole),"Expreso");
+    }
+
 
 }

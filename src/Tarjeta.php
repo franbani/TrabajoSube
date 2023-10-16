@@ -6,8 +6,9 @@ class Tarjeta{
 
     public $tipo = "comun";
 
-    public function __construct($saldo){ // $saldo es inherente a cada tarjeta
-        $this->saldo = $saldo;
+    public function __construct($sald = 0, $id = 1){ // $saldo e id son inherentes a cada tarjeta
+        $this->saldo = $sald;
+        $this->id = $id;
     }
 
     private $saldoMax = 6600;
