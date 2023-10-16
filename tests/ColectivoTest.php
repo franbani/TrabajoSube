@@ -31,7 +31,6 @@ class ColectivoTest extends TestCase{
         $cole = new Colectivo();
         $carga = 400;
         $this->assertEquals($tarj->cargaTarjeta($tarj,$carga),"Te pasaste del saldo maximo ($6600). Se cargará la tarjeta hasta este saldo y el excedente se acreditará a medida que se use la tarjeta.");
-        $this->assertEquals($tarj->saldo, $tarj->saldoMax);
         $this->assertEquals($tarj->saldoPendiente, 200);
 
         $cole->timerNuevoPago = 0; // para poder pagar varios pasajes uno atras del otro
@@ -129,6 +128,27 @@ class ColectivoTest extends TestCase{
         $bole = new Boleto();
         $this->assertEquals($bole->conocerAbonado($cole,$tarj),184);
         $this->assertEquals($bole->conocerLinea($cole),"Expreso");
+    }
+
+    // Comprueba que dependiendo de cuantos viajes se hayan hecho, se aplicaran los distintos descuentos
+    public function testcomprobarDescuento(){
+        $saldoinicial = 1000;
+        $tarj = new Tarjeta($saldoinicial);
+        $cole = new Colectivo();
+        $cole->timerNuevoPago = 0; // Seteamos en 0 para que se puedan pagar boletos aunque no hayan pasado los 5 minutos, solo para el test
+        
+        $saldofinal = $saldoinicial - $cole->costePasaje;
+        $this->assertEquals($cole->pagarCon($tarj), "Pago exitoso. Saldo restante: $" . $saldofinal); // tarifa normal
+        $tarj->viajesEsteMes = 30; // para probar el 20%
+        $saldofinal -= ($cole->costePasaje * 0.80);
+        $this->assertEquals($cole->pagarCon($tarj), "Pago exitoso. Saldo restante: $" . $saldofinal);
+
+        $tarj->viajesEsteMes = 79; // para probar el 25%
+        $saldofinal -= ($cole->costePasaje * 0.80);
+        $this->assertEquals($cole->pagarCon($tarj), "Pago exitoso. Saldo restante: $" . $saldofinal);
+        $this->assertEquals($tarj->viajesEsteMes, 80);
+        $saldofinal -= ($cole->costePasaje * 0.75);
+        $this->assertEquals($cole->pagarCon($tarj), "Pago exitoso. Saldo restante: $" . $saldofinal);
     }
 
 

@@ -32,17 +32,20 @@ class Colectivo{
 
         $boleto = new Boleto();
 
-        $tarjeta->actualizarUsos($tarjeta);
+        $tarjeta->actualizarUsosDiarios($tarjeta);
 
         if (time() - $tarjeta->fyhUltPago >= $this->timerNuevoPago){
-            $tarjeta->fyhUltPago = time();
+
+
             if($tarjeta->tipo == "completa" && $tarjeta->viajesHoy < 2){
+                $tarjeta->fyhUltPago = time();
                 $tarjeta->viajesHoy += 1;
                 return $boleto->generarBoleto($tarjeta);
             }
             
             else if ($tarjeta->tipo == "parcial" && $tarjeta->viajesHoy < 4){
                 if (($tarjeta->saldo - ($this->costePasaje / 2 )) >= $this->saldoMin){
+                    $tarjeta->fyhUltPago = time();
                     $tarjeta->viajesHoy += 1;
                     $tarjeta->saldo -= ($this->costePasaje / 2);
                     $this->acreditarSaldoPend($tarjeta);
@@ -54,8 +57,23 @@ class Colectivo{
             }
     
             else{
-                if (($tarjeta->saldo - $this->costePasaje) >= $this->saldoMin){
-                    $tarjeta->saldo -= $this->costePasaje;
+                $multiplicador = 1;
+                if($tarjeta->tipo = "comun"){
+                    $tarjeta->actualizarUsoMensual($tarjeta);
+                    if($tarjeta->viajesEsteMes >= 30 && $tarjeta->viajesEsteMes <= 80){
+                        $multiplicador = 0.80;
+                    }
+                    if($tarjeta->viajesEsteMes >= 80){
+                        $multiplicador = 0.75;
+                    }
+                }
+
+                if (($tarjeta->saldo - ($this->costePasaje * $multiplicador)) >= $this->saldoMin){
+                    $tarjeta->saldo -= ($this->costePasaje * $multiplicador);
+                    $tarjeta->fyhUltPago = time();
+                    if ($tarjeta->tipo == "comun"){
+                        $tarjeta->viajesEsteMes += 1;
+                    }
                     $this->acreditarSaldoPend($tarjeta);
                     $tarjeta->viajesHoy += 1;
                     return $boleto->generarBoleto($tarjeta);

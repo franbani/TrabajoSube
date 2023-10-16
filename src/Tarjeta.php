@@ -6,6 +6,8 @@ class Tarjeta{
 
     public $tipo = "comun";
     public $saldoPendiente = 0;
+    public $fyhUltPago = 0;
+    public $viajesEsteMes = 0;
 
     public function __construct($sald = 0, $id = 1){ // $saldo e id son inherentes a cada tarjeta
         $this->saldo = $sald;
@@ -33,8 +35,14 @@ class Tarjeta{
         }
     }
 
-    public function actualizarUsos($tarjeta){
+    public function actualizarUsosDiarios($tarjeta){
 
+    }
+
+    public function actualizarUsoMensual($tarjeta){
+        if (date("d",$tarjeta->fyhUltPago) > 30 || date("m",$tarjeta->fyhUltPago) != date("m",time())){
+            $tarjeta->viajesEsteMes = 0;
+        }
     }
 
 }
