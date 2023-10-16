@@ -88,6 +88,7 @@ class ColectivoTest extends TestCase{
         $saldofinal -= $cole->costePasaje / 2;
         $this->assertEquals($cole->pagarCon($tarj),"Pago exitoso. Saldo restante: $" . $saldofinal);
         $saldofinal -= $cole->costePasaje;
+        $this->assertEquals($tarj->viajesHoy,4);
         $this->assertEquals($cole->pagarCon($tarj),"Pago exitoso. Saldo restante: $" . $saldofinal);
     }
 
@@ -97,11 +98,17 @@ class ColectivoTest extends TestCase{
         $bole = new Boleto();
         $saldoinicial = 500;
         $tarj = new FranquiciaCompleta($saldoinicial,756442);
-        $this->assertEquals($cole->pagarCon($tarj),"Descuento completo aplicado");
-        $this->assertEquals($tarj->saldo,500);
+    
         $this->assertEquals($bole->conocerAbonado($cole,$tarj),0);
         $this->assertEquals($bole->conocerTipo($tarj),"completa");
         $this->assertEquals($bole->conocerID($tarj),756442);
+
+        // Test de los 2 BEG diarios
+        $cole->timerNuevoPago = 0; // Seteamos en 0 para que se puedan pagar boletos aunque no hayan pasado los 5 minutos, solo para el test
+        $this->assertEquals($cole->pagarCon($tarj),"Descuento completo aplicado");
+        $this->assertEquals($cole->pagarCon($tarj),"Descuento completo aplicado");
+        $this->assertEquals($tarj->viajesHoy,2);
+        $this->assertEquals($cole->pagarCon($tarj),"Pago exitoso. Saldo restante: $" . $saldoinicial - 120);
     }
 
 
