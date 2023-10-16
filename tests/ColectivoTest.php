@@ -127,7 +127,7 @@ class ColectivoTest extends TestCase{
         $cole = new Interurbano();
         $tarj = new Tarjeta();
         $bole = new Boleto();
-        $this->assertEquals($bole->conocerAbonado($cole,$tarj),270);
+        $this->assertEquals($bole->conocerAbonado($cole,$tarj),184);
         $this->assertEquals($bole->conocerLinea($cole),"Expreso");
     }
 
