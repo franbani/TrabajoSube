@@ -39,13 +39,14 @@ class ColectivoTest extends TestCase{
         $this->assertEquals($tarj->cargaTarjeta($tarj,$carga),"Valor de carga invalido. Los valores validos son: 150, 200, 250, 300, 350, 400, 450, 500, 600, 700, 800, 900, 1000, 1100, 1200, 1300, 1400, 1500, 2000, 2500, 3000, 3500 o 4000");
     }
 
-    // Comprobar que se descuente el precio del pasaje en tarjetas comunes
+    // Comprobar que se descuente el precio del pasaje en tarjetas comunes, y que no se pueda pagar pasaje sin que transcurran los 5 min
     public function testpagarConSaldo(){
         $cole = new Colectivo();
         $saldoinicial = 500;
         $tarj = new Tarjeta($saldoinicial);
         $saldofinal = $saldoinicial - $cole->costePasaje;
         $this->assertEquals($cole->pagarCon($tarj),"Pago exitoso. Saldo restante: $" . $saldofinal);
+        $this->assertEquals($cole->pagarCon($tarj),"Ya has pagado un pasaje recientemente");
     }
 
     // Comprobar que se pueda usar el pasaje plus
@@ -68,13 +69,26 @@ class ColectivoTest extends TestCase{
     public function testFranquiciaParcial(){
         $cole = new Colectivo();
         $bole = new Boleto();
-        $saldoinicial = 500;
+        $saldoinicial = 1000;
         $tarj = new FranquiciaParcial($saldoinicial,466752);
-        $saldofinal = $saldoinicial - ($cole->costePasaje / 2);
-        $this->assertEquals($cole->pagarCon($tarj),"Pago exitoso. Saldo restante: $" . $saldofinal);
+
+        // Test de datos de boleto
         $this->assertEquals($bole->conocerAbonado($cole,$tarj),60);
         $this->assertEquals($bole->conocerTipo($tarj),"parcial");
         $this->assertEquals($bole->conocerID($tarj),466752);
+
+        // Test de los 4 medios boletos diarios
+        $cole->timerNuevoPago = 0; // Seteamos en 0 para que se puedan pagar boletos aunque no hayan pasado los 5 minutos, solo para el test
+        $saldofinal = $saldoinicial - ($cole->costePasaje / 2);
+        $this->assertEquals($cole->pagarCon($tarj),"Pago exitoso. Saldo restante: $" . $saldofinal);
+        $saldofinal -= $cole->costePasaje / 2;
+        $this->assertEquals($cole->pagarCon($tarj),"Pago exitoso. Saldo restante: $" . $saldofinal);
+        $saldofinal -= $cole->costePasaje / 2;
+        $this->assertEquals($cole->pagarCon($tarj),"Pago exitoso. Saldo restante: $" . $saldofinal);
+        $saldofinal -= $cole->costePasaje / 2;
+        $this->assertEquals($cole->pagarCon($tarj),"Pago exitoso. Saldo restante: $" . $saldofinal);
+        $saldofinal -= $cole->costePasaje;
+        $this->assertEquals($cole->pagarCon($tarj),"Pago exitoso. Saldo restante: $" . $saldofinal);
     }
 
     // Comprobar una tarjeta de franquicia completa puede pagar siempre un boleto y probar generacion de boleto

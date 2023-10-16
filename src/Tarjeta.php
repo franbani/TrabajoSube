@@ -5,6 +5,8 @@ namespace TrabajoSube;
 class Tarjeta{
 
     public $tipo = "comun";
+    public $fyhUltPago = 0;
+    public $viajesHoy = 0;
 
     public function __construct($sald = 0, $id = 1){ // $saldo e id son inherentes a cada tarjeta
         $this->saldo = $sald;
@@ -27,6 +29,10 @@ class Tarjeta{
             $tarjeta->saldo = $tarjeta->saldo + $carga;
             return $tarjeta->saldo;
         }
+    }
+
+    public function actualizarUsos($tarjeta){
+
     }
 
 }
