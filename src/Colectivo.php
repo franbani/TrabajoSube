@@ -12,6 +12,20 @@ class Colectivo{
         $this->linea = $linea;
     }
 
+    private function acreditarSaldoPend($tarj){
+        if($tarj->saldoPendiente > 0){
+            if($tarj->saldo + $tarj->saldoPendiente > $tarj->saldoMax){
+                $acreditando = $tarj->saldoMax - $tarj->saldo;
+                $tarj->saldoPendiente -= $acreditando;
+            }
+            else{
+                $acreditando = $tarj->saldoPendiente;
+                $tarj->saldoPendiente = 0;
+            }
+            $tarj->saldo += $acreditando;
+        }
+    }
+
 
     // pagarCon toma un objeto de clase Tarjeta, descuenta el precio del pasaje al saldo, crea un objeto de clase Boleto y retorna el resultado de generarBoleto o de saldoIns
     public function pagarCon($tarjeta){
@@ -26,11 +40,12 @@ class Colectivo{
                 $tarjeta->viajesHoy += 1;
                 return $boleto->generarBoleto($tarjeta);
             }
-    
-            else if($tarjeta->tipo == "parcial" && $tarjeta->viajesHoy < 4){
+            
+            else if ($tarjeta->tipo == "parcial" && $tarjeta->viajesHoy < 4){
                 if (($tarjeta->saldo - ($this->costePasaje / 2 )) >= $this->saldoMin){
                     $tarjeta->viajesHoy += 1;
-                    $tarjeta->saldo = $tarjeta->saldo - ($this->costePasaje / 2);
+                    $tarjeta->saldo -= ($this->costePasaje / 2);
+                    $this->acreditarSaldoPend($tarjeta);
                     return $boleto->generarBoleto($tarjeta);
                 }
                 else {
@@ -40,7 +55,8 @@ class Colectivo{
     
             else{
                 if (($tarjeta->saldo - $this->costePasaje) >= $this->saldoMin){
-                    $tarjeta->saldo = $tarjeta->saldo - $this->costePasaje;
+                    $tarjeta->saldo -= $this->costePasaje;
+                    $this->acreditarSaldoPend($tarjeta);
                     $tarjeta->viajesHoy += 1;
                     return $boleto->generarBoleto($tarjeta);
                 }
