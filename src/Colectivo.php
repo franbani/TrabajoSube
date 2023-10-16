@@ -22,13 +22,14 @@ class Colectivo{
 
         if (time() - $tarjeta->fyhUltPago >= $this->timerNuevoPago){
             $tarjeta->fyhUltPago = time();
-            if($tarjeta->tipo == "completa"){
+            if($tarjeta->tipo == "completa" && $tarjeta->viajesHoy < 2){
+                $tarjeta->viajesHoy += 1;
                 return $boleto->generarBoleto($tarjeta);
             }
     
             else if($tarjeta->tipo == "parcial" && $tarjeta->viajesHoy < 4){
                 if (($tarjeta->saldo - ($this->costePasaje / 2 )) >= $this->saldoMin){
-                    $tarjeta->viajesHoy = $tarjeta->viajesHoy + 1;
+                    $tarjeta->viajesHoy += 1;
                     $tarjeta->saldo = $tarjeta->saldo - ($this->costePasaje / 2);
                     return $boleto->generarBoleto($tarjeta);
                 }
@@ -40,6 +41,7 @@ class Colectivo{
             else{
                 if (($tarjeta->saldo - $this->costePasaje) >= $this->saldoMin){
                     $tarjeta->saldo = $tarjeta->saldo - $this->costePasaje;
+                    $tarjeta->viajesHoy += 1;
                     return $boleto->generarBoleto($tarjeta);
                 }
                 else{

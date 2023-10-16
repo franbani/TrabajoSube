@@ -33,7 +33,7 @@ class Boleto{
     }
 
     public function generarBoleto($tarjeta){ // Caso en el cual se permite pagar el pasaje
-        if($tarjeta->tipo == "completa"){
+        if($tarjeta->tipo == "completa" && $tarjeta->viajesHoy < 3){
             $texto = "Descuento completo aplicado";
         }
         else if ($tarjeta->saldo > 0){
