@@ -44,7 +44,7 @@ class ColectivoTest extends TestCase{
     // Comprobar que no se haga la carga si se ingresa un valor de carga no listado en la consigna
     public function testcargaTarjetaInval(){
         $tarj = new Tarjeta(0);
-        $carga = 333;
+        $carga = 666;
         $this->assertEquals($tarj->cargaTarjeta($tarj,$carga),"Valor de carga invalido. Los valores validos son: 150, 200, 250, 300, 350, 400, 450, 500, 600, 700, 800, 900, 1000, 1100, 1200, 1300, 1400, 1500, 2000, 2500, 3000, 3500 o 4000");
     }
 
@@ -82,11 +82,15 @@ class ColectivoTest extends TestCase{
         $tarj = new FranquiciaParcial($saldoinicial,466752);
 
         // Test de datos de boleto
-        $this->assertEquals($bole->conocerAbonado($cole,$tarj),60);
+        if($cole->verif){
+            $this->assertEquals($bole->conocerAbonado($cole,$tarj),60);
+        }
+        else{
+            $this->assertEquals($bole->conocerAbonado($cole,$tarj),120);
+        }
         $this->assertEquals($bole->conocerTipo($tarj),"parcial");
         $this->assertEquals($bole->conocerID($tarj),466752);
 
-        
         $cole->verif = true; // Para que se pueda testear el beneficio sin estar en fecha u horario habil
         
         // Test de los 4 medios boletos diarios
@@ -110,8 +114,13 @@ class ColectivoTest extends TestCase{
         $bole = new Boleto();
         $saldoinicial = 500;
         $tarj = new FranquiciaCompleta($saldoinicial,756442);
-    
-        $this->assertEquals($bole->conocerAbonado($cole,$tarj),0);
+        
+        if($cole->verif){
+            $this->assertEquals($bole->conocerAbonado($cole,$tarj),0);
+        }
+        else{
+            $this->assertEquals($bole->conocerAbonado($cole,$tarj),120);
+        }
         $this->assertEquals($bole->conocerTipo($tarj),"completa");
         $this->assertEquals($bole->conocerID($tarj),756442);
 

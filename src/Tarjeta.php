@@ -9,14 +9,16 @@ class Tarjeta{
     public $fyhUltPago = 0;
     public $viajesEsteMes = 0;
 
-    public function __construct($sald = 0, $id = 1){ // $saldo e id son inherentes a cada tarjeta
+    public function __construct($sald = 0, $id = 1){ // saldo e id son inherentes a cada tarjeta
         $this->saldo = $sald;
         $this->id = $id;
     }
 
     public $saldoMax = 6600;
 
-    public function cargaTarjeta($tarjeta, $carga){ // Toma un objeto de clase Tarjeta y un entero, y si la carga no excede el saldoMax y el valor de carga es valido, se acredita la carga y se retorna el nuevo saldo
+    // Toma un objeto de clase Tarjeta y un entero, y si la carga no excede el saldoMax y el valor de carga es valido,
+    // se acredita la carga y se retorna el nuevo saldo
+    public function cargaTarjeta($tarjeta, $carga){
 
         if(($tarjeta->saldo + $carga) > $this->saldoMax){
             $this->saldoPendiente = $tarjeta->saldo + $carga - $this ->saldoMax;
@@ -35,10 +37,13 @@ class Tarjeta{
         }
     }
 
+    // Se declara actualizarUsosDiarios para poder utilizarla en las clases heredaderas de Tarjeta: FranquiciaParcial y FranquiciaCompleta 
     public function actualizarUsosDiarios($tarjeta){
 
     }
 
+    // actualizarUsoMensual toma una tarjeta y si el día actual no es del 1 al 30, o si el mes es distinto al mes del ultimo pago realizado, se resetea la propiedad de
+    // viajesEsteMes de la tarjeta introducida devolviendola a 0, para que se reinicie el recuento de pasajes pagados en este mes
     public function actualizarUsoMensual($tarjeta){
         if (date("d",$tarjeta->fyhUltPago) > 30 || date("m",$tarjeta->fyhUltPago) != date("m",time())){
             $tarjeta->viajesEsteMes = 0;

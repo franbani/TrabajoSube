@@ -6,7 +6,7 @@ class Colectivo{
     private $saldoMin = -211.84;
     public $costePasaje = 120;
     public $timerNuevoPago = 300;
-    public $verif;
+    public $verif; // mas adelante verif sera true si se está en fyh habiles para franquicia de boleto, y false en el caso contrario
 
     public function __construct($linea = "102N"){
         $this->linea = $linea;

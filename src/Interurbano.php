@@ -3,11 +3,12 @@
 namespace TrabajoSube;
 
 class Interurbano extends Colectivo{
-    private $saldoMin = -211.84;
     public $costePasaje = 184;
 
+    // Por defecto los colectivos interurbanos son Expresos
     public function __construct($linea = "Expreso"){
         $this->linea = $linea;
+        $this->verif = $this->verificarFyhHabil();
     }
 
 }
