@@ -6,9 +6,9 @@ class Colectivo{
     private $saldoMin = -211.84;
     public $costePasaje = 120;
     public $timerNuevoPago = 300;
-    public $verif; // mas adelante verif sera true si se está en fyh habiles para franquicia de boleto, y false en el caso contrario
+    public $verif; // mas adelante verif sera true si se está en fyh habiles para franquicia de boleto, y false en el caso contrario.
 
-    public function __construct($linea = "102N"){
+    public function __construct($linea = "102N"){ // por defecto los colectivos normales se inicializan con la linea 102 Negra 
         $this->linea = $linea;
         $this->verif = $this->verificarFyhHabil();
     }
@@ -48,13 +48,13 @@ class Colectivo{
         if (time() - $tarjeta->fyhUltPago >= $this->timerNuevoPago){
 
 
-            if($tarjeta->tipo == "completa" && $tarjeta->viajesHoy < 2 && $this->verif){
+            if($tarjeta->tipo == "completa" && $tarjeta->viajesHoy < $tarjeta->viajesDiarios && $this->verif){
                 $tarjeta->fyhUltPago = time();
                 $tarjeta->viajesHoy += 1;
                 return $boleto->generarBoleto($tarjeta);
             }
             
-            else if ($tarjeta->tipo == "parcial" && $tarjeta->viajesHoy < 4 && $this->verif){
+            else if ($tarjeta->tipo == "parcial" && $tarjeta->viajesHoy < $tarjeta->viajesDiarios && $this->verif){
                 if (($tarjeta->saldo - ($this->costePasaje / 2 )) >= $this->saldoMin){
                     $tarjeta->fyhUltPago = time();
                     $tarjeta->viajesHoy += 1;
@@ -68,16 +68,7 @@ class Colectivo{
             }
     
             else{
-                $multiplicador = 1;
-                if($tarjeta->tipo = "comun"){
-                    $tarjeta->actualizarUsoMensual($tarjeta);
-                    if($tarjeta->viajesEsteMes >= 30 && $tarjeta->viajesEsteMes <= 80){
-                        $multiplicador = 0.80;
-                    }
-                    if($tarjeta->viajesEsteMes >= 80){
-                        $multiplicador = 0.75;
-                    }
-                }
+                $multiplicador = $tarjeta->calculoMultiplicador($tarjeta);
 
                 if (($tarjeta->saldo - ($this->costePasaje * $multiplicador)) >= $this->saldoMin){
                     $tarjeta->saldo -= ($this->costePasaje * $multiplicador);
