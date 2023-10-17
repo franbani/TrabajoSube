@@ -21,12 +21,15 @@ class Boleto{
 
     // conocerAbonado toma un objeto de clase Colectivo y uno de clase Tarjeta, analiza el tipo de la tarjeta y devuelve el coste que deberia tener el pasaje en el colectivo dado usando la tarjeta dada
     public function conocerAbonado($cole,$tarj){
+        // Caso de Franquicia Completa habilitada
         if ($tarj->tipo == "completa" && $tarj->viajesHoy < 2 && $cole->verif){
             return 0;
         }
+        // Caso de Franquicia Parcial habilitada
         else if ($tarj->tipo == "parcial" && $tarj->viajesHoy < 4 && $cole->verif){
             return $cole->costePasaje / 2;
         }
+        // Caso de tarjeta comun con y sin descuentos
         else if ($tarj->tipo == "comun"){
             if($tarj->viajesEsteMes >= 30 && $tarj->viajesEsteMes <= 80){
                 return $cole->costePasaje * 0.80;
@@ -36,6 +39,7 @@ class Boleto{
             }
             else return $cole->costePasaje;
         }
+        // Caso de Franquicia Completa o Parcial inhabilitada
         else return $cole->costePasaje;
     }
     
@@ -45,13 +49,17 @@ class Boleto{
     }
 
     // generarBoleto toma una tarjeta y devuelve un texto que será distinto dependiendo de si se aplica el boleto gratuito, si se paga normalmente o si la tarjeta queda con saldo negativo
-    public function generarBoleto($tarjeta){ // Caso en el cual se permite pagar el pasaje
+    public function generarBoleto($tarjeta){ // generarBoleto se llama cuando se permite pagar el pasaje
+
+        // Caso en el que se utilice el beneficio de Franquicia Completa
         if($tarjeta->tipo == "completa" && $tarjeta->viajesHoy < 3){
             $texto = "Descuento completo aplicado";
         }
+        // Caso en el que se paga el pasaje sin observaciones
         else if ($tarjeta->saldo > 0){
             $texto = "Pago exitoso. Saldo restante: $" . $tarjeta->saldo;
         }
+        // Caso en el que se utiliza pasaje plus
         else {
             $texto = "Pago exitoso. La tarjeta adeuda $" . -$tarjeta->saldo;
         }

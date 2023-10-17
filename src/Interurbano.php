@@ -8,7 +8,6 @@ class Interurbano extends Colectivo{
     // Por defecto los colectivos interurbanos son Expresos
     public function __construct($linea = "Expreso"){
         $this->linea = $linea;
-        $this->verif = $this->verificarFyhHabil();
     }
 
 }

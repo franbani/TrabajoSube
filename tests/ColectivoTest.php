@@ -51,7 +51,7 @@ class ColectivoTest extends TestCase{
         $this->assertEquals($cole->pagarCon($tarj),"Descuento completo aplicado");
         $this->assertEquals($cole->pagarCon($tarj),"Descuento completo aplicado");
         $this->assertEquals($tarj->viajesHoy, 2);
-        $this->assertEquals($cole->pagarCon($tarj),"Pago exitoso. Saldo restante: $" . $saldoInicial - 120);
+        $this->assertEquals($cole->pagarCon($tarj),"Pago exitoso. Saldo restante: $" . $saldoInicial - $cole->costePasaje);
         
     }
 
