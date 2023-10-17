@@ -10,20 +10,14 @@ class BoletoTest extends TestCase{
     public function testBoletoNormal(){
         $bole = new Boleto();
         $cole = new Colectivo();
-        $costecmp = $cole->costePasaje;
-        $saldoinicial = 1000;
+        $costeCmp = $cole->costePasaje;
+        $saldoInicial = 1000;
         $id = 466752;
-        $tarj = new FranquiciaParcial($saldoinicial,$id);
-        $tipocompare = $tarj->tipo;
+        $tarj = new Tarjeta($saldoInicial,$id);
+        $tipoCmp = $tarj->tipo;
 
-
-        if($cole->verif){
-            $this->assertEquals($bole->conocerAbonado($cole,$tarj),$costecmp / 2);
-        }
-        else{
-            $this->assertEquals($bole->conocerAbonado($cole,$tarj),$costecmp);
-        }
-        $this->assertEquals($bole->conocerTipo($tarj),$tipocompare);
+        $this->assertEquals($bole->conocerAbonado($cole,$tarj),$costeCmp);
+        $this->assertEquals($bole->conocerTipo($tarj),$tipoCmp);
         $this->assertEquals($bole->conocerID($tarj),$id);
     }
 
@@ -31,20 +25,21 @@ class BoletoTest extends TestCase{
     public function testBoletoParcial(){
         $bole = new Boleto();
         $cole = new Colectivo();
-        $costecmp = $cole->costePasaje;
-        $saldoinicial = 1000;
+        $costeCmp = $cole->costePasaje;
+        $saldoInicial = 1000;
         $id = 466752;
-        $tarj = new FranquiciaParcial($saldoinicial,$id);
-        $tipocompare = $tarj->tipo;
+        $tarj = new FranquiciaParcial($saldoInicial,$id);
+        $tipoCmp = $tarj->tipo;
 
 
         if($cole->verif){
-            $this->assertEquals($bole->conocerAbonado($cole,$tarj),$costecmp / 2);
+            $this->assertEquals($bole->conocerAbonado($cole,$tarj),$costeCmp / 2);
         }
         else{
-            $this->assertEquals($bole->conocerAbonado($cole,$tarj),$costecmp);
+            $this->assertEquals($bole->conocerAbonado($cole,$tarj),$costeCmp);
         }
-        $this->assertEquals($bole->conocerTipo($tarj),$tipocompare);
+
+        $this->assertEquals($bole->conocerTipo($tarj),$tipoCmp);
         $this->assertEquals($bole->conocerID($tarj),$id);
     }
 
@@ -52,21 +47,30 @@ class BoletoTest extends TestCase{
     public function testBoletoCompleta(){
         $bole = new Boleto();
         $cole = new Colectivo();
-        $costecmp = $cole->costePasaje;
-        $saldoinicial = 1000;
+        $costeCmp = $cole->costePasaje;
+        $saldoInicial = 1000;
         $id = 466752;
-        $tarj = new FranquiciaParcial($saldoinicial,$id);
-        $tipocompare = $tarj->tipo;
+        $tarj = new FranquiciaCompleta($saldoInicial, $id);
+        $tipoCmp = $tarj->tipo;
 
 
+        // Testear que se pueda comprar el pasaje correctamente, tanto estándose en fyh habil como no
         if($cole->verif){
-            $this->assertEquals($bole->conocerAbonado($cole,$tarj),$costecmp / 2);
+            $this->assertEquals($bole->conocerAbonado($cole,$tarj), 0);
         }
         else{
-            $this->assertEquals($bole->conocerAbonado($cole,$tarj),$costecmp);
+            $this->assertEquals($bole->conocerAbonado($cole,$tarj), $costeCmp);
         }
-        $this->assertEquals($bole->conocerTipo($tarj),$tipocompare);
-        $this->assertEquals($bole->conocerID($tarj),$id);
+
+        $this->assertEquals($bole->conocerTipo($tarj), $tipoCmp);
+        $this->assertEquals($bole->conocerID($tarj), $id);
+    }
+
+    public function testConocerLinea(){
+        $bole = new Boleto();
+        $lineaCmp = "A Chapuy";
+        $cole = new Colectivo($lineaCmp);
+        $this->assertEquals($bole->conocerLinea($cole), $lineaCmp);
     }
 
 }

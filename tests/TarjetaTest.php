@@ -8,11 +8,11 @@ class TarjetaTest extends TestCase{
 
     // Cargar $500 a una tarjeta con $0 de saldo
     public function testcargaTarjeta(){
-        $saldoinicial = 0;
+        $saldoInicial = 0;
         $carga = 500;
-        $saldofinal = $saldoinicial + $carga;
-        $tarj = new Tarjeta($saldoinicial);
-        $this->assertEquals($tarj->cargaTarjeta($tarj,$carga),'Se han cargado $' . $carga . '. Saldo final: $' . $saldofinal);
+        $saldoFinal = $saldoInicial + $carga;
+        $tarj = new Tarjeta($saldoInicial);
+        $this->assertEquals($tarj->cargaTarjeta($tarj,$carga),'Se han cargado $' . $carga . '. Saldo final: $' . $saldoFinal);
     }
 
     // Comprobar que no se haga la carga si se ingresa un valor de carga no listado en la consigna
@@ -24,53 +24,53 @@ class TarjetaTest extends TestCase{
 
     // Hacer una carga a una tarjeta con saldo negativo para comprobar que se descuente lo que se debe
     public function testcargaPlus(){
-        $saldoinicial = -100;
+        $saldoInicial = -100;
         $carga = 200;
-        $tarj = new Tarjeta($saldoinicial);
-        $saldofinal = $saldoinicial + $carga;
-        $this->assertEquals($tarj->cargaTarjeta($tarj,$carga),'Se han cargado $' . $carga . '. Saldo final: $' . $saldofinal);
+        $tarj = new Tarjeta($saldoInicial);
+        $saldoFinal = $saldoInicial + $carga;
+        $this->assertEquals($tarj->cargaTarjeta($tarj,$carga),'Se han cargado $' . $carga . '. Saldo final: $' . $saldoFinal);
     }
 
     // Comprobar que se pueda usar el pasaje plus
     public function testpagarConPlus(){
-        $saldoinicial = 0;
-        $tarj = new Tarjeta($saldoinicial);
+        $saldoInicial = 0;
+        $tarj = new Tarjeta($saldoInicial);
         $cole = new Colectivo();
-        $saldofinal = $saldoinicial - $cole->costePasaje;
-        $this->assertEquals($cole->pagarCon($tarj),"Pago exitoso. La tarjeta adeuda $" . -$saldofinal);
+        $saldoFinal = $saldoInicial - $cole->costePasaje;
+        $this->assertEquals($cole->pagarCon($tarj),"Pago exitoso. La tarjeta adeuda $" . -$saldoFinal);
     }
 
     public function test4MedioBoletos(){
         $cole = new Colectivo();
-        $saldoinicial = 1000;
-        $tarj = new FranquiciaParcial($saldoinicial);
+        $saldoInicial = 1000;
+        $tarj = new FranquiciaParcial($saldoInicial);
         
         $cole->verif = true; // Para que se pueda testear el beneficio sin estar en fecha u horario habil
         
         // Test de los 4 medios boletos diarios
         $cole->timerNuevoPago = 0; // Seteamos en 0 para que se puedan pagar boletos aunque no hayan pasado los 5 minutos, solo para el test
-        $saldofinal = $saldoinicial - ($cole->costePasaje / 2);
-        $this->assertEquals($cole->pagarCon($tarj),"Pago exitoso. Saldo restante: $" . $saldofinal);
-        $saldofinal -= $cole->costePasaje / 2;
-        $this->assertEquals($cole->pagarCon($tarj),"Pago exitoso. Saldo restante: $" . $saldofinal);
-        $saldofinal -= $cole->costePasaje / 2;
-        $this->assertEquals($cole->pagarCon($tarj),"Pago exitoso. Saldo restante: $" . $saldofinal);
-        $saldofinal -= $cole->costePasaje / 2;
-        $this->assertEquals($cole->pagarCon($tarj),"Pago exitoso. Saldo restante: $" . $saldofinal);
-        $saldofinal -= $cole->costePasaje;
+        $saldoFinal = $saldoInicial - ($cole->costePasaje / 2);
+        $this->assertEquals($cole->pagarCon($tarj),"Pago exitoso. Saldo restante: $" . $saldoFinal);
+        $saldoFinal -= $cole->costePasaje / 2;
+        $this->assertEquals($cole->pagarCon($tarj),"Pago exitoso. Saldo restante: $" . $saldoFinal);
+        $saldoFinal -= $cole->costePasaje / 2;
+        $this->assertEquals($cole->pagarCon($tarj),"Pago exitoso. Saldo restante: $" . $saldoFinal);
+        $saldoFinal -= $cole->costePasaje / 2;
+        $this->assertEquals($cole->pagarCon($tarj),"Pago exitoso. Saldo restante: $" . $saldoFinal);
+        $saldoFinal -= $cole->costePasaje;
         $this->assertEquals($tarj->viajesHoy,4);
-        $this->assertEquals($cole->pagarCon($tarj),"Pago exitoso. Saldo restante: $" . $saldofinal);
+        $this->assertEquals($cole->pagarCon($tarj),"Pago exitoso. Saldo restante: $" . $saldoFinal);
     }
 
     // Comprobar cuando se exceda el saldo maximo en una carga, se cargue hasta este saldo maximo, y comprobar que se acredite la carga pendiente al pagar un pasaje
     public function testcargaTarjetaMax(){
-        $saldoinicial = 6400;
-        $tarj = new Tarjeta($saldoinicial);
+        $saldoInicial = 6400;
+        $tarj = new Tarjeta($saldoInicial);
         $cole = new Colectivo();
         $carga = 400;
         $this->assertEquals($tarj->cargaTarjeta($tarj,$carga),"Te pasaste del saldo maximo ($6600). Se cargará la tarjeta hasta este saldo y el excedente se acreditará a medida que se use la tarjeta.");
-        if(($tarj->saldoMax - $saldoinicial) <= $carga){
-            $acr = $carga - ($tarj->saldoMax - $saldoinicial);
+        if(($tarj->saldoMax - $saldoInicial) <= $carga){
+            $acr = $carga - ($tarj->saldoMax - $saldoInicial);
         }
         else $acr = $carga;
         $this->assertEquals($tarj->saldoPendiente, $acr);
@@ -85,23 +85,23 @@ class TarjetaTest extends TestCase{
 
     // Comprobar que dependiendo de cuantos viajes se hayan hecho, se aplicaran los distintos descuentos
     public function testcomprobarDescuento(){
-        $saldoinicial = 1000;
-        $tarj = new Tarjeta($saldoinicial);
+        $saldoInicial = 1000;
+        $tarj = new Tarjeta($saldoInicial);
         $cole = new Colectivo();
         $cole->timerNuevoPago = 0; // Seteamos en 0 para que se puedan pagar boletos aunque no hayan pasado los 5 minutos, solo para el test
         
-        $saldofinal = $saldoinicial - $cole->costePasaje;
-        $this->assertEquals($cole->pagarCon($tarj), "Pago exitoso. Saldo restante: $" . $saldofinal); // tarifa normal
+        $saldoFinal = $saldoInicial - $cole->costePasaje;
+        $this->assertEquals($cole->pagarCon($tarj), "Pago exitoso. Saldo restante: $" . $saldoFinal); // tarifa normal
         $tarj->viajesEsteMes = $tarj->multiplicador1APartirDe; // para probar el 20%
-        $saldofinal -= ($cole->costePasaje * $tarj->multiplicador1);
-        $this->assertEquals($cole->pagarCon($tarj), "Pago exitoso. Saldo restante: $" . $saldofinal);
+        $saldoFinal -= ($cole->costePasaje * $tarj->multiplicador1);
+        $this->assertEquals($cole->pagarCon($tarj), "Pago exitoso. Saldo restante: $" . $saldoFinal);
 
         $tarj->viajesEsteMes = $tarj->multiplicador2APartirDe - 1; // para probar el 25%
-        $saldofinal -= ($cole->costePasaje * $tarj->multiplicador1);
-        $this->assertEquals($cole->pagarCon($tarj), "Pago exitoso. Saldo restante: $" . $saldofinal);
+        $saldoFinal -= ($cole->costePasaje * $tarj->multiplicador1);
+        $this->assertEquals($cole->pagarCon($tarj), "Pago exitoso. Saldo restante: $" . $saldoFinal);
         $this->assertEquals($tarj->viajesEsteMes, $tarj->multiplicador2APartirDe);
-        $saldofinal -= ($cole->costePasaje * $tarj->multiplicador2);
-        $this->assertEquals($cole->pagarCon($tarj), "Pago exitoso. Saldo restante: $" . $saldofinal);
+        $saldoFinal -= ($cole->costePasaje * $tarj->multiplicador2);
+        $this->assertEquals($cole->pagarCon($tarj), "Pago exitoso. Saldo restante: $" . $saldoFinal);
         
     }
 
