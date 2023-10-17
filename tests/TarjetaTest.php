@@ -68,7 +68,7 @@ class TarjetaTest extends TestCase{
         $tarj = new Tarjeta($saldoInicial);
         $cole = new Colectivo();
         $carga = 400;
-        $this->assertEquals($tarj->cargaTarjeta($tarj,$carga),"Te pasaste del saldo maximo ($6600). Se cargará la tarjeta hasta este saldo y el excedente se acreditará a medida que se use la tarjeta.");
+        $this->assertEquals($tarj->cargaTarjeta($tarj,$carga),"Te pasaste del saldo maximo ($" . $tarj->saldoMax . "). Se cargará la tarjeta hasta este saldo y el excedente se acreditará a medida que se use la tarjeta.");
         if(($tarj->saldoMax - $saldoInicial) <= $carga){
             $acr = $carga - ($tarj->saldoMax - $saldoInicial);
         }
@@ -88,15 +88,15 @@ class TarjetaTest extends TestCase{
         $saldoInicial = 1000;
         $tarj = new Tarjeta($saldoInicial);
         $cole = new Colectivo();
-        $cole->timerNuevoPago = 0; // Seteamos en 0 para que se puedan pagar boletos aunque no hayan pasado los 5 minutos, solo para el test
+        $cole->timerNuevoPago = 0; // Seteamos en 0 para que se puedan pagar boletos aunque no hayan pasado los minutos, solo para el test
         
         $saldoFinal = $saldoInicial - $cole->costePasaje;
         $this->assertEquals($cole->pagarCon($tarj), "Pago exitoso. Saldo restante: $" . $saldoFinal); // tarifa normal
-        $tarj->viajesEsteMes = $tarj->multiplicador1APartirDe; // para probar el 20%
+        $tarj->viajesEsteMes = $tarj->multiplicador1APartirDe; // para probar el descuento 1
         $saldoFinal -= ($cole->costePasaje * $tarj->multiplicador1);
         $this->assertEquals($cole->pagarCon($tarj), "Pago exitoso. Saldo restante: $" . $saldoFinal);
 
-        $tarj->viajesEsteMes = $tarj->multiplicador2APartirDe - 1; // para probar el 25%
+        $tarj->viajesEsteMes = $tarj->multiplicador2APartirDe - 1; // para probar el descuento 2
         $saldoFinal -= ($cole->costePasaje * $tarj->multiplicador1);
         $this->assertEquals($cole->pagarCon($tarj), "Pago exitoso. Saldo restante: $" . $saldoFinal);
         $this->assertEquals($tarj->viajesEsteMes, $tarj->multiplicador2APartirDe);
